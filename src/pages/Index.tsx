@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, ServerOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const Index = () => {
   const [answer, setAnswer] = useState<string>("Loading...");
@@ -12,12 +13,23 @@ const Index = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [newText, setNewText] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [backendOffline, setBackendOffline] = useState<boolean>(false);
   const { toast } = useToast();
 
   const fetchAnswer = async () => {
     try {
       setRefreshing(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3001"}/api/answer`);
+      setBackendOffline(false);
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
+      console.log(`Attempting to fetch from: ${apiUrl}/api/answer`);
+      
+      const response = await fetch(`${apiUrl}/api/answer`, {
+        // Adding cache control to prevent caching issues
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch data: ${response.status}`);
@@ -32,9 +44,10 @@ const Index = () => {
       setAnswer("Error loading data. Please try again.");
       setLoading(false);
       setRefreshing(false);
+      setBackendOffline(true);
       toast({
-        title: "Error",
-        description: "Failed to load the answer from the server.",
+        title: "Connection Error",
+        description: "Unable to connect to the backend server. Please check if it's running.",
         variant: "destructive",
       });
     }
@@ -46,10 +59,16 @@ const Index = () => {
     
     try {
       setSubmitting(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3001"}/api/create-answer`, {
+      setBackendOffline(false);
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
+      console.log(`Attempting to post to: ${apiUrl}/api/create-answer`);
+      
+      const response = await fetch(`${apiUrl}/api/create-answer`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
         body: JSON.stringify({ data: newText }),
       });
@@ -67,9 +86,10 @@ const Index = () => {
       fetchAnswer(); // Refresh the displayed data
     } catch (error) {
       console.error("Error submitting new text:", error);
+      setBackendOffline(true);
       toast({
-        title: "Error",
-        description: "Failed to submit new text to the server.",
+        title: "Connection Error",
+        description: "Failed to submit text. Is the backend server running?",
         variant: "destructive",
       });
     } finally {
@@ -79,10 +99,11 @@ const Index = () => {
 
   useEffect(() => {
     fetchAnswer();
-    // Set up polling every 5 seconds to check for updates
-    const interval = setInterval(fetchAnswer, 5000);
+    
+    // Set up polling with increasing intervals if backend is offline
+    const interval = setInterval(fetchAnswer, backendOffline ? 10000 : 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [backendOffline]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-4">
@@ -94,6 +115,17 @@ const Index = () => {
               This page displays the most recent data received by the backend API.
             </p>
           </div>
+          
+          {backendOffline && (
+            <Alert variant="destructive" className="animate-pulse">
+              <ServerOff className="h-4 w-4" />
+              <AlertTitle>Backend Connection Issue</AlertTitle>
+              <AlertDescription>
+                Cannot connect to the backend server at {import.meta.env.VITE_API_URL || "http://localhost:3001"}. 
+                Please ensure the server is running and accessible.
+              </AlertDescription>
+            </Alert>
+          )}
           
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <h2 className="text-sm font-medium text-blue-800 mb-2">Latest Received Data:</h2>
@@ -157,6 +189,9 @@ const Index = () => {
               {import.meta.env.VITE_API_URL || "http://localhost:3001"}/api/create-answer
             </code>
             <p className="mt-1">with JSON body: {`{ "data": "your-text-here" }`}</p>
+            <p className="mt-2 text-xs text-amber-600">
+              Remember to start the backend server with <code>node src/backend/server.js</code>
+            </p>
           </div>
         </div>
       </Card>
