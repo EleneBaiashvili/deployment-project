@@ -3,12 +3,15 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const Index = () => {
   const [answer, setAnswer] = useState<string>("Loading...");
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [newText, setNewText] = useState<string>("");
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
 
   const fetchAnswer = async () => {
@@ -34,6 +37,43 @@ const Index = () => {
         description: "Failed to load the answer from the server.",
         variant: "destructive",
       });
+    }
+  };
+
+  const submitNewText = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newText.trim()) return;
+    
+    try {
+      setSubmitting(true);
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3001"}/api/create-answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: newText }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to submit data: ${response.status}`);
+      }
+
+      toast({
+        title: "Success",
+        description: "New text submitted successfully!",
+      });
+      
+      setNewText("");
+      fetchAnswer(); // Refresh the displayed data
+    } catch (error) {
+      console.error("Error submitting new text:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit new text to the server.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -70,6 +110,29 @@ const Index = () => {
               )}
             </div>
           </div>
+          
+          <form onSubmit={submitNewText} className="space-y-3">
+            <div className="flex gap-2">
+              <Input
+                value={newText}
+                onChange={(e) => setNewText(e.target.value)}
+                placeholder="Enter new text to submit..."
+                className="flex-1"
+                disabled={submitting}
+              />
+              <Button 
+                type="submit" 
+                disabled={submitting || !newText.trim()}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {submitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </form>
           
           <div className="flex justify-center">
             <Button
