@@ -1,73 +1,82 @@
-# Welcome to your Lovable project
 
-## Project info
+# Deployment Assignment
 
-**URL**: https://lovable.dev/projects/234b823d-3510-481f-81ed-dd85c960e9d7
+This is a simple web application created for the deployment assignment. It consists of a backend API endpoint that accepts POST requests with data, and a frontend that displays the most recent data received by the backend.
 
-## How can I edit this code?
+## Project Structure
 
-There are several ways of editing your application.
+```
+project/
+├── src/
+│   ├── backend/         # Express.js backend server
+│   ├── pages/           # React frontend pages
+│   └── ...
+└── ...
+```
 
-**Use Lovable**
+## Requirements
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/234b823d-3510-481f-81ed-dd85c960e9d7) and start prompting.
+- Node.js (v16 or higher)
+- npm or yarn
 
-Changes made via Lovable will be committed automatically to this repo.
+## Development Setup
 
-**Use your preferred IDE**
+1. Install dependencies:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+# Install backend dependencies
+cd src/backend
+npm install
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Install frontend dependencies
+cd ../..
+npm install
+```
 
-Follow these steps:
+2. Create a `.env` file in the root directory with:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```
+VITE_API_URL=http://localhost:3001
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. Start the development servers:
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+# Start backend server
+cd src/backend
+npm run dev
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# In a separate terminal, start frontend
+cd ../..
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## API Endpoint
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The backend provides the following API endpoint:
 
-**Use GitHub Codespaces**
+- **POST /api/create-answer**
+  - Accepts JSON body in the format: `{ "data": "some-text-here" }`
+  - Stores the received data for later retrieval
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **GET /api/answer**
+  - Returns the most recently stored data
 
-## What technologies are used for this project?
+## Frontend Pages
 
-This project is built with:
+- **/** - Main page with info about the project
+- **/answer** - Simple page that displays the most recent data received by the backend in a `<span id="answer">` element
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment
 
-## How can I deploy this project?
+To deploy this application to AWS EC2:
 
-Simply open [Lovable](https://lovable.dev/projects/234b823d-3510-481f-81ed-dd85c960e9d7) and click on Share -> Publish.
+1. Launch an EC2 instance and connect to it
+2. Clone this repository
+3. Install Node.js on your EC2 instance
+4. Install dependencies for both frontend and backend
+5. Build the frontend with `npm run build`
+6. Update the `.env` file with your EC2 instance's public IP
+7. Start the backend server with PM2: `pm2 start src/backend/server.js`
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+For detailed deployment instructions, see the [AWS Deployment Guide](aws-deployment-guide.md).
