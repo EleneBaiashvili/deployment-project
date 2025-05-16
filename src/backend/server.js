@@ -59,7 +59,7 @@ app.get('/api/answer', async (req, res) => {
 // Initialize data file before starting server
 initializeDataFile();
 
-// Special handling for Lovable environment - set routes for the API
+// Special handling for Lovable environment
 if (process.env.LOVABLE_ENV) {
   // API routes are already set up above
   console.log('Running in Lovable environment');
@@ -76,4 +76,7 @@ if (process.env.LOVABLE_ENV) {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);
+  console.log(`API endpoints available at:`);
+  console.log(`- POST http://localhost:${PORT}/api/create-answer`);
+  console.log(`- GET http://localhost:${PORT}/api/answer`);
 });

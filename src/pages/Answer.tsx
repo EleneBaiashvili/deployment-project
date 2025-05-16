@@ -10,7 +10,7 @@ const Answer = () => {
   useEffect(() => {
     const fetchAnswer = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || "https://234b823d-3510-481f-81ed-dd85c960e9d7.lovableproject.com/api";
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
         const response = await fetch(`${apiUrl}/answer`);
         
         if (!response.ok) {

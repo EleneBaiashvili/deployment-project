@@ -20,7 +20,7 @@ const Index = () => {
     try {
       setRefreshing(true);
       setBackendOffline(false);
-      const apiUrl = import.meta.env.VITE_API_URL || "https://234b823d-3510-481f-81ed-dd85c960e9d7.lovableproject.com/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
       console.log(`Attempting to fetch from: ${apiUrl}/answer`);
       
       const response = await fetch(`${apiUrl}/answer`, {
@@ -60,7 +60,7 @@ const Index = () => {
     try {
       setSubmitting(true);
       setBackendOffline(false);
-      const apiUrl = import.meta.env.VITE_API_URL || "https://234b823d-3510-481f-81ed-dd85c960e9d7.lovableproject.com/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
       console.log(`Attempting to post to: ${apiUrl}/create-answer`);
       
       const response = await fetch(`${apiUrl}/create-answer`, {
