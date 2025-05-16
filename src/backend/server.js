@@ -56,21 +56,24 @@ app.get('/api/answer', async (req, res) => {
   }
 });
 
-// Serve static files for frontend
-app.use(express.static(path.join(__dirname, '../../dist')));
+// Initialize data file before starting server
+initializeDataFile();
 
-// Serve the frontend for any route not matching the API
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../dist/index.html'));
-});
-
-// Initialize and start server
-async function startServer() {
-  await initializeDataFile();
+// Special handling for Lovable environment - set routes for the API
+if (process.env.LOVABLE_ENV) {
+  // API routes are already set up above
+  console.log('Running in Lovable environment');
+} else {
+  // Serve static files for frontend when not in Lovable
+  app.use(express.static(path.join(__dirname, '../../dist')));
   
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  // Serve the frontend for any route not matching the API
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../dist/index.html'));
   });
 }
 
-startServer();
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
+});

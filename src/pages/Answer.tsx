@@ -10,7 +10,8 @@ const Answer = () => {
   useEffect(() => {
     const fetchAnswer = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3001"}/api/answer`);
+        const apiUrl = import.meta.env.VITE_API_URL || "https://234b823d-3510-481f-81ed-dd85c960e9d7.lovableproject.com/api";
+        const response = await fetch(`${apiUrl}/answer`);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch data: ${response.status}`);

@@ -20,10 +20,10 @@ const Index = () => {
     try {
       setRefreshing(true);
       setBackendOffline(false);
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
-      console.log(`Attempting to fetch from: ${apiUrl}/api/answer`);
+      const apiUrl = import.meta.env.VITE_API_URL || "https://234b823d-3510-481f-81ed-dd85c960e9d7.lovableproject.com/api";
+      console.log(`Attempting to fetch from: ${apiUrl}/answer`);
       
-      const response = await fetch(`${apiUrl}/api/answer`, {
+      const response = await fetch(`${apiUrl}/answer`, {
         // Adding cache control to prevent caching issues
         headers: {
           'Cache-Control': 'no-cache',
@@ -60,10 +60,10 @@ const Index = () => {
     try {
       setSubmitting(true);
       setBackendOffline(false);
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
-      console.log(`Attempting to post to: ${apiUrl}/api/create-answer`);
+      const apiUrl = import.meta.env.VITE_API_URL || "https://234b823d-3510-481f-81ed-dd85c960e9d7.lovableproject.com/api";
+      console.log(`Attempting to post to: ${apiUrl}/create-answer`);
       
-      const response = await fetch(`${apiUrl}/api/create-answer`, {
+      const response = await fetch(`${apiUrl}/create-answer`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
